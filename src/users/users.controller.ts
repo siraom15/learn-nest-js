@@ -1,8 +1,9 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -17,13 +18,13 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async findAll(): Promise<User[] | object > {
+  async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User|[]> {
-    return this.userService.findOne(id)||[];
+  async findOne(@Param('id') id: string): Promise<User> {
+    return this.userService.findOne(id);
   }
 
   @Post()
@@ -37,5 +38,18 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User | undefined> {
     return this.userService.update(id, updateUserDto);
+  }
+
+  @Get('test/exception')
+  getEx(): HttpException {
+    // throw new HttpException('test', HttpStatus.FORBIDDEN);
+    // or
+    throw new HttpException(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: 'This is a custom message',
+      },
+      HttpStatus.FORBIDDEN,
+    );
   }
 }
